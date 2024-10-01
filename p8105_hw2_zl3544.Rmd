@@ -1,0 +1,43 @@
+---
+title: "p8105_hw2_zl3544"
+output: html_document
+date: "2024-09-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+```{r}
+library(tidyverse)
+```
+
+## Problem 1
+
+Using relative path to access the CSV file and clean the data:
+```{r, message=FALSE}
+NYC_transit_df = 
+  read_csv("./data/NYC_Transit_Data.csv", na=c("NA","", ".")) %>% 
+  janitor::clean_names() %>% 
+  select(line:entry, vending, ada) %>% 
+ mutate(
+    entry = case_match(
+      entry,
+      "YES" ~ TRUE,
+      "NO" ~ FALSE
+    )
+  )
+
+```
+Then see the head of the selected dataframe:
+```{r}
+head(NYC_transit_df)
+```
+In the data cleaning process above, I: Use the relative path to read the csv file, then treat "NA","", "." as missing, then select the variable that worth analyzing in this problem, and clean up variable names, finally, I convert the entry variable from character to a logical variable.
+
+After reading, selecting and cleaning the data, the data set to analyze has 1868 rows and 19 columns. But the data isn't tidy, for the reason that different routes are considered as different variables, these columns contain value information, they can be transformed.
+
+
+
+
