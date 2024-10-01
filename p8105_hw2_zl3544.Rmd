@@ -38,6 +38,28 @@ In the data cleaning process above, I: Use the relative path to read the csv fil
 
 After reading, selecting and cleaning the data, the data set to analyze has 1868 rows and 19 columns. But the data isn't tidy, for the reason that different routes are considered as different variables, these columns contain value information, they can be transformed.
 
+Caculate the distinct stations using distinct function:
+```{r, message=FALSE}
+distinct_stations= count(distinct(NYC_transit_df, station_name, line))
+```
+There are `r count(distinct(NYC_transit_df, station_name, line))` distinct stations.
 
+Caculate the ADA compliant stations:
+```{r, message=FALSE}
+ada_compliant_stations= 
+  NYC_transit_df %>% 
+  filter(ada==TRUE) %>% 
+  distinct(station_name, line) %>% 
+  nrow() 
+  
+```
+There are `r filter(NYC_transit_df, ada == "TRUE") %>% distinct(station_name, line) %>% nrow` ADA compliant stations.
 
-
+Caculate the number of station entrances / exits without vending allow entrance:
+```{r, message=FALSE}
+no_vending_entry=
+  filter(NYC_transit_df, vending=="NO") %>% 
+  filter(entry=="TRUE") %>% 
+  nrow()
+```
+Then the proportion of station entrances / exits without vending allow entrance is: `r (filter(NYC_transit_df, vending=="NO") %>% filter(entry=="TRUE") %>% nrow)/(filter(NYC_transit_df, vending=="NO") %>% nrow)`

@@ -406,6 +406,24 @@ variable.</p>
 analyze has 1868 rows and 19 columns. But the data isn’t tidy, for the
 reason that different routes are considered as different variables,
 these columns contain value information, they can be transformed.</p>
+<p>Caculate the distinct stations using distinct function:</p>
+<pre class="r"><code>distinct_stations= count(distinct(NYC_transit_df, station_name, line))</code></pre>
+<p>There are 465 distinct stations.</p>
+<p>Caculate the ADA compliant stations:</p>
+<pre class="r"><code>ada_compliant_stations= 
+  NYC_transit_df %&gt;% 
+  filter(ada==TRUE) %&gt;% 
+  distinct(station_name, line) %&gt;% 
+  nrow() </code></pre>
+<p>There are 84 ADA compliant stations.</p>
+<p>Caculate the number of station entrances / exits without vending
+allow entrance:</p>
+<pre class="r"><code>no_vending_entry=
+  filter(NYC_transit_df, vending==&quot;NO&quot;) %&gt;% 
+  filter(entry==&quot;TRUE&quot;) %&gt;% 
+  nrow()</code></pre>
+<p>Then the proportion of station entrances / exits without vending
+allow entrance is: 0.3770492</p>
 </div>
 
 
