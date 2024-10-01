@@ -451,6 +451,136 @@ allow entrance is: 0.3770492</p>
   distinct(line, station_name) %&gt;% 
   nrow()</code></pre>
 <p>Among the stations that serve the A train, 17 are ADA compliant</p>
+<p>Problem 2</p>
+<p>Problem 3</p>
+<p>import the data :</p>
+<pre class="r"><code>bakers_df=
+  read_csv(&quot;./data/gbb_datasets/bakers.csv&quot;, na=c(&quot;NA&quot;,&quot;&quot;,&quot;.&quot;)) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  separate(baker_name, into = c(&quot;baker&quot;, &quot;last_name&quot;), sep = &quot; &quot;)</code></pre>
+<pre><code>## Rows: 120 Columns: 5
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (3): Baker Name, Baker Occupation, Hometown
+## dbl (2): Series, Baker Age
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>head(bakers_df)</code></pre>
+<pre><code>## # A tibble: 6 × 6
+##   baker   last_name  series baker_age baker_occupation   hometown               
+##   &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;              &lt;chr&gt;                  
+## 1 Ali     Imdad           4        25 Charity worker     Saltley, Birmingham    
+## 2 Alice   Fevronia       10        28 Geography teacher  Essex                  
+## 3 Alvin   Magallanes      6        37 Nurse              Bracknell, Berkshire   
+## 4 Amelia  LeBruin        10        24 Fashion designer   Halifax                
+## 5 Andrew  Smyth           7        25 Aerospace engineer Derby / Holywood, Coun…
+## 6 Annetha Mills           1        30 Midwife            Essex</code></pre>
+<pre class="r"><code>bakes_df=
+  read_csv(&quot;./data/gbb_datasets/bakes.csv&quot;, na=c(&quot;NA&quot;,&quot;&quot;,&quot;.&quot;)) %&gt;% 
+  janitor::clean_names()</code></pre>
+<pre><code>## Rows: 548 Columns: 5
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (3): Baker, Signature Bake, Show Stopper
+## dbl (2): Series, Episode
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>head(bakes_df)</code></pre>
+<pre><code>## # A tibble: 6 × 5
+##   series episode baker     signature_bake                           show_stopper
+##    &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                                    &lt;chr&gt;       
+## 1      1       1 Annetha   Light Jamaican Black Cakewith Strawberr… Red, White …
+## 2      1       1 David     Chocolate Orange Cake                    Black Fores…
+## 3      1       1 Edd       Caramel Cinnamon and Banana Cake         N/A         
+## 4      1       1 Jasminder Fresh Mango and Passion Fruit Hummingbi… N/A         
+## 5      1       1 Jonathan  Carrot Cake with Lime and Cream Cheese … Three Tiere…
+## 6      1       1 Lea       Cranberry and Pistachio Cakewith Orange… Raspberries…</code></pre>
+<pre class="r"><code>results_df=
+  read_csv(&quot;./data/gbb_datasets/results.csv&quot;,skip=2 ,na=c(&quot;NA&quot;,&quot;&quot;,&quot;.&quot;)) %&gt;% 
+  janitor::clean_names()</code></pre>
+<pre><code>## Rows: 1136 Columns: 5
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: &quot;,&quot;
+## chr (2): baker, result
+## dbl (3): series, episode, technical
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<pre class="r"><code>head(results_df)</code></pre>
+<pre><code>## # A tibble: 6 × 5
+##   series episode baker     technical result
+##    &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt; 
+## 1      1       1 Annetha           2 IN    
+## 2      1       1 David             3 IN    
+## 3      1       1 Edd               1 IN    
+## 4      1       1 Jasminder        NA IN    
+## 5      1       1 Jonathan          9 IN    
+## 6      1       1 Louise           NA IN</code></pre>
+<pre class="r"><code>anti_join(bakes_df, bakers_df, by = &quot;baker&quot;, &quot;series&quot;)</code></pre>
+<pre><code>## # A tibble: 8 × 5
+##   series episode baker    signature_bake                            show_stopper
+##    &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;                                     &lt;chr&gt;       
+## 1      2       1 &quot;\&quot;Jo\&quot;&quot; Chocolate Orange CupcakesOrange and Card… Chocolate a…
+## 2      2       2 &quot;\&quot;Jo\&quot;&quot; Caramelised Onion, Gruyere and Thyme Qui… Raspberry a…
+## 3      2       3 &quot;\&quot;Jo\&quot;&quot; Stromboli flavored with Mozzarella, Ham,… Unknown     
+## 4      2       4 &quot;\&quot;Jo\&quot;&quot; Lavender Biscuits                         Blueberry M…
+## 5      2       5 &quot;\&quot;Jo\&quot;&quot; Salmon and Asparagus Pie                  Apple and R…
+## 6      2       6 &quot;\&quot;Jo\&quot;&quot; Rum and Raisin Baked Cheesecake           Limoncello …
+## 7      2       7 &quot;\&quot;Jo\&quot;&quot; Raspberry &amp; Strawberry Mousse Cake        Pain Aux Ra…
+## 8      2       8 &quot;\&quot;Jo\&quot;&quot; Raspberry and Blueberry Mille Feuille     Mini Victor…</code></pre>
+<pre class="r"><code>anti_join(results_df, bakers_df, by = &quot;baker&quot;, &quot;series&quot;)</code></pre>
+<pre><code>## # A tibble: 8 × 5
+##   series episode baker  technical result    
+##    &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;     
+## 1      2       1 Joanne        11 IN        
+## 2      2       2 Joanne        10 IN        
+## 3      2       3 Joanne         1 IN        
+## 4      2       4 Joanne         8 IN        
+## 5      2       5 Joanne         6 IN        
+## 6      2       6 Joanne         1 STAR BAKER
+## 7      2       7 Joanne         3 IN        
+## 8      2       8 Joanne         1 WINNER</code></pre>
+<pre class="r"><code>anti_join(bakers_df, results_df, by = &quot;baker&quot;, &quot;series&quot;)</code></pre>
+<pre><code>## # A tibble: 1 × 6
+##   baker last_name series baker_age baker_occupation hometown    
+##   &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;            &lt;chr&gt;       
+## 1 Jo    Wheatley       2        41 Housewife        Ongar, Essex</code></pre>
+<p>The result show that the name Joanne and Jo doesn’t match, both name
+are from the same series, so I suppose that their are the same people,
+note as Jo</p>
+<pre class="r"><code>results_df = 
+  results_df  %&gt;% 
+  mutate(baker = ifelse(baker == &quot;Joanne&quot;, &quot;Jo&quot;, baker))
+bakes_df = 
+  bakes_df %&gt;% 
+  mutate(baker = ifelse(baker == &#39;&quot;Jo&quot;&#39;, &quot;Jo&quot;, baker))
+
+anti_join(bakes_df, bakers_df, by = &quot;baker&quot;, &quot;series&quot;)</code></pre>
+<pre><code>## # A tibble: 0 × 5
+## # ℹ 5 variables: series &lt;dbl&gt;, episode &lt;dbl&gt;, baker &lt;chr&gt;,
+## #   signature_bake &lt;chr&gt;, show_stopper &lt;chr&gt;</code></pre>
+<pre class="r"><code>anti_join(results_df, bakers_df, by = &quot;baker&quot;, &quot;series&quot;)</code></pre>
+<pre><code>## # A tibble: 0 × 5
+## # ℹ 5 variables: series &lt;dbl&gt;, episode &lt;dbl&gt;, baker &lt;chr&gt;, technical &lt;dbl&gt;,
+## #   result &lt;chr&gt;</code></pre>
+<pre class="r"><code>anti_join(bakers_df, results_df, by = &quot;baker&quot;, &quot;series&quot;)</code></pre>
+<pre><code>## # A tibble: 0 × 6
+## # ℹ 6 variables: baker &lt;chr&gt;, last_name &lt;chr&gt;, series &lt;dbl&gt;, baker_age &lt;dbl&gt;,
+## #   baker_occupation &lt;chr&gt;, hometown &lt;chr&gt;</code></pre>
+<p>Remame Jo to the results_df and bakes_df, the dataset all match with
+each other.</p>
+</div>
+<div id="description" class="section level1">
+<h1>description</h1>
+<p>When seeing the raw data, the baker.csv contains the full name of the
+baker, however, the bakes.csv and results.csv only include the first
+name of the baker, so I split the full name of the baker in the
+baker.csv data. Also, in the results.csv, the first two rows contains no
+useful information and lead confuse when handle with this data, so I
+skip the first two rows. Then I use anti_join function to see how
+different datasets match,</p>
 </div>
 
 

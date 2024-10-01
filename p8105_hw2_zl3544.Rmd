@@ -98,3 +98,54 @@ stations_serve_A_ada=
   nrow()
 ```
 Among the stations that serve the A train, `r stations_serve_A_ada` are ADA compliant
+
+Problem 2
+
+Problem 3
+
+import the data :
+```{r}
+bakers_df=
+  read_csv("./data/gbb_datasets/bakers.csv", na=c("NA","",".")) %>% 
+  janitor::clean_names() %>% 
+  separate(baker_name, into = c("baker", "last_name"), sep = " ")
+head(bakers_df)
+```
+```{r}
+bakes_df=
+  read_csv("./data/gbb_datasets/bakes.csv", na=c("NA","",".")) %>% 
+  janitor::clean_names()
+head(bakes_df)
+```
+```{r}
+results_df=
+  read_csv("./data/gbb_datasets/results.csv",skip=2 ,na=c("NA","",".")) %>% 
+  janitor::clean_names()
+head(results_df)
+```
+```{r}
+anti_join(bakes_df, bakers_df, by = "baker", "series")
+anti_join(results_df, bakers_df, by = "baker", "series")
+anti_join(bakers_df, results_df, by = "baker", "series")
+```
+The result show that the name Joanne and Jo doesn’t match, both name are from the same series, so I suppose that their are the same people, note as Jo
+```{r}
+results_df = 
+  results_df  %>% 
+  mutate(baker = ifelse(baker == "Joanne", "Jo", baker))
+bakes_df = 
+  bakes_df %>% 
+  mutate(baker = ifelse(baker == '"Jo"', "Jo", baker))
+
+anti_join(bakes_df, bakers_df, by = "baker", "series")
+anti_join(results_df, bakers_df, by = "baker", "series")
+anti_join(bakers_df, results_df, by = "baker", "series")
+```
+Remame Jo to the results_df and bakes_df, the dataset all match with each other.
+
+
+
+
+
+# description 
+When seeing the raw data, the baker.csv contains the full name of the baker, however, the bakes.csv and results.csv only include the first name of the baker, so I split the full name of the baker in the baker.csv data. Also, in the results.csv, the first two rows contains no useful information and lead confuse when handle with this data, so I skip the first two rows. Then I use anti_join function to see how different datasets match, 
