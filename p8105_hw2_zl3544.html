@@ -569,8 +569,14 @@ anti_join(bakes_df, bakers_df, by = &quot;baker&quot;, &quot;series&quot;)</code
 <pre><code>## # A tibble: 0 × 6
 ## # ℹ 6 variables: baker &lt;chr&gt;, last_name &lt;chr&gt;, series &lt;dbl&gt;, baker_age &lt;dbl&gt;,
 ## #   baker_occupation &lt;chr&gt;, hometown &lt;chr&gt;</code></pre>
-<p>Remame Jo to the results_df and bakes_df, the dataset all match with
+<p>Rename Jo to the results_df and bakes_df, the dataset all match with
 each other.</p>
+<p>Merge the datasets together as one single dataset:</p>
+<pre class="r"><code>final_df=
+  bakers_df %&gt;% 
+  left_join(bakes_df, by=c(&quot;baker&quot;, &quot;series&quot;)) %&gt;% 
+  left_join(results_df, by = c(&quot;baker&quot;, &quot;series&quot;, &quot;episode&quot;))
+write.csv(final_df, file = &quot;data/gbb_datasets/final.csv&quot;)</code></pre>
 </div>
 <div id="description" class="section level1">
 <h1>description</h1>
