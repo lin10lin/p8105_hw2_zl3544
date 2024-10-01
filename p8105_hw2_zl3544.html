@@ -424,6 +424,33 @@ allow entrance:</p>
   nrow()</code></pre>
 <p>Then the proportion of station entrances / exits without vending
 allow entrance is: 0.3770492</p>
+<p>Reformat data:</p>
+<pre class="r"><code>Tidy_NYC_transit_df =
+  NYC_transit_df %&gt;% 
+  mutate(
+    across(route8:route11, as.character)
+  ) %&gt;% 
+  pivot_longer(
+    route1:route11,
+    names_to=&quot;route_name&quot;,
+    names_prefix=&quot;route&quot;,
+    values_to=&quot;train&quot;,
+    values_drop_na=TRUE
+  ) </code></pre>
+<p>Caculate distinct stations serve the A train using R:</p>
+<pre class="r"><code>stations_serve_A=
+  Tidy_NYC_transit_df %&gt;% 
+  filter(train==&quot;A&quot;) %&gt;% 
+  distinct(line, station_name) %&gt;% 
+  nrow() </code></pre>
+<p>Distinct stations serve the A train is 60.</p>
+<p>Caculate the stations that serve the A train, are ADA compliant:</p>
+<pre class="r"><code>stations_serve_A_ada=
+  Tidy_NYC_transit_df %&gt;% 
+  filter(train==&quot;A&quot; &amp; ada==&quot;TRUE&quot;) %&gt;% 
+  distinct(line, station_name) %&gt;% 
+  nrow()</code></pre>
+<p>Among the stations that serve the A train, 17 are ADA compliant</p>
 </div>
 
 
