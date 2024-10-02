@@ -466,16 +466,6 @@ allow entrance is: 0.3770492</p>
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>head(bakers_df)</code></pre>
-<pre><code>## # A tibble: 6 × 6
-##   baker   last_name  series baker_age baker_occupation   hometown               
-##   &lt;chr&gt;   &lt;chr&gt;       &lt;dbl&gt;     &lt;dbl&gt; &lt;chr&gt;              &lt;chr&gt;                  
-## 1 Ali     Imdad           4        25 Charity worker     Saltley, Birmingham    
-## 2 Alice   Fevronia       10        28 Geography teacher  Essex                  
-## 3 Alvin   Magallanes      6        37 Nurse              Bracknell, Berkshire   
-## 4 Amelia  LeBruin        10        24 Fashion designer   Halifax                
-## 5 Andrew  Smyth           7        25 Aerospace engineer Derby / Holywood, Coun…
-## 6 Annetha Mills           1        30 Midwife            Essex</code></pre>
 <pre class="r"><code>bakes_df=
   read_csv(&quot;./data/gbb_datasets/bakes.csv&quot;, na=c(&quot;NA&quot;,&quot;&quot;,&quot;.&quot;)) %&gt;% 
   janitor::clean_names()</code></pre>
@@ -487,16 +477,6 @@ allow entrance is: 0.3770492</p>
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>head(bakes_df)</code></pre>
-<pre><code>## # A tibble: 6 × 5
-##   series episode baker     signature_bake                           show_stopper
-##    &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;     &lt;chr&gt;                                    &lt;chr&gt;       
-## 1      1       1 Annetha   Light Jamaican Black Cakewith Strawberr… Red, White …
-## 2      1       1 David     Chocolate Orange Cake                    Black Fores…
-## 3      1       1 Edd       Caramel Cinnamon and Banana Cake         N/A         
-## 4      1       1 Jasminder Fresh Mango and Passion Fruit Hummingbi… N/A         
-## 5      1       1 Jonathan  Carrot Cake with Lime and Cream Cheese … Three Tiere…
-## 6      1       1 Lea       Cranberry and Pistachio Cakewith Orange… Raspberries…</code></pre>
 <pre class="r"><code>results_df=
   read_csv(&quot;./data/gbb_datasets/results.csv&quot;,skip=2 ,na=c(&quot;NA&quot;,&quot;&quot;,&quot;.&quot;)) %&gt;% 
   janitor::clean_names()</code></pre>
@@ -508,16 +488,8 @@ allow entrance is: 0.3770492</p>
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>head(results_df)</code></pre>
-<pre><code>## # A tibble: 6 × 5
-##   series episode baker     technical result
-##    &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt; 
-## 1      1       1 Annetha           2 IN    
-## 2      1       1 David             3 IN    
-## 3      1       1 Edd               1 IN    
-## 4      1       1 Jasminder        NA IN    
-## 5      1       1 Jonathan          9 IN    
-## 6      1       1 Louise           NA IN</code></pre>
+<p>Use anti_join function to see how different datasets match, to check
+the correctness and completeness of the datasets.</p>
 <pre class="r"><code>anti_join(bakes_df, bakers_df, by = &quot;baker&quot;, &quot;series&quot;)</code></pre>
 <pre><code>## # A tibble: 8 × 5
 ##   series episode baker    signature_bake                            show_stopper
@@ -591,6 +563,20 @@ different datasets match, then I solve the name that not match. After
 that, I merge datasets in a order that can fill the missing data, then
 relocate the variable order to make it more reasonable to read. Finally,
 I save the merged dataset to the gbb_dataset file.</p>
+<p>The final dataset consists all the information in the bakers.csv,
+bakes.csv, results.csv datasets and aviod missing data when merge the
+datasets together, and the variable is arranged in a logical way,
+readers can quickly find the baker given the series and episodes and the
+name of the baker.</p>
+<p>Create a reader-friendly table showing the star baker or winner of
+each episode in Seasons 5 through 10.</p>
+<pre class="r"><code>star_winner_baker_df=
+  final_df %&gt;% 
+  filter(series %in% c(5,6,7,8,9,10)) %&gt;% 
+  filter(result %in% c(&quot;STAR BAKER&quot;, &quot;WINNER&quot;)) %&gt;% 
+  select(series, episode, baker, result) %&gt;% 
+  arrange(series, episode, baker)
+write.csv(star_winner_baker_df, file = &quot;data/gbb_datasets/star_winner_baker.csv&quot;)</code></pre>
 </div>
 
 

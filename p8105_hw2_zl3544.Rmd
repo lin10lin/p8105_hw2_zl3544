@@ -109,20 +109,18 @@ bakers_df=
   read_csv("./data/gbb_datasets/bakers.csv", na=c("NA","",".")) %>% 
   janitor::clean_names() %>% 
   separate(baker_name, into = c("baker", "last_name"), sep = " ")
-head(bakers_df)
 ```
 ```{r}
 bakes_df=
   read_csv("./data/gbb_datasets/bakes.csv", na=c("NA","",".")) %>% 
   janitor::clean_names()
-head(bakes_df)
 ```
 ```{r}
 results_df=
   read_csv("./data/gbb_datasets/results.csv",skip=2 ,na=c("NA","",".")) %>% 
   janitor::clean_names()
-head(results_df)
 ```
+Use anti_join function to see how different datasets match, to check the correctness and completeness of the datasets.
 ```{r}
 anti_join(bakes_df, bakers_df, by = "baker", "series")
 anti_join(results_df, bakers_df, by = "baker", "series")
@@ -155,4 +153,17 @@ write.csv(final_df, file = "data/gbb_datasets/final.csv")
   
 ```
 # description 
-When seeing the raw data, the baker.csv contains the full name of the baker, however, the bakes.csv and results.csv only include the first name of the baker, so I split the full name of the baker in the baker.csv data. Also, in the results.csv, the first two rows contains no useful information and lead confuse when handle with this data, so I skip the first two rows. Then I use anti_join function to see how different datasets match, then I solve the name that not match. After that, I merge datasets in a order that can fill the missing data, then relocate the variable order to make it more reasonable to read. Finally, I save the merged dataset to the gbb_dataset file.
+When seeing the raw data, the baker.csv contains the full name of the baker, however, the bakes.csv and results.csv only include the first name of the baker, so I split the full name of the baker in the baker.csv data. Also, in the results.csv, the first two rows contains no useful information and lead confuse when handle with this data, so I skip the first two rows. Then I use anti_join function to see how different datasets match, then I solve the name that not match. After that, I merge datasets in a order that can fill the missing data, then relocate the variable order to make it more reasonable to read. Finally, I save the merged dataset to the gbb_dataset file. 
+
+The final dataset consists all the information in the bakers.csv, bakes.csv, results.csv datasets and aviod missing data when merge the datasets together, and the variable is arranged in a logical way, readers can quickly find the baker given the series and episodes and the name of the baker.
+
+Create a reader-friendly table showing the star baker or winner of each episode in Seasons 5 through 10.
+```{r}
+star_winner_baker_df=
+  final_df %>% 
+  filter(series %in% c(5,6,7,8,9,10)) %>% 
+  filter(result %in% c("STAR BAKER", "WINNER")) %>% 
+  select(series, episode, baker, result) %>% 
+  arrange(series, episode, baker)
+write.csv(star_winner_baker_df, file = "data/gbb_datasets/star_winner_baker.csv")
+```
