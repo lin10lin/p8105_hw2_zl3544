@@ -148,10 +148,11 @@ Merge the datasets together as one single dataset:
 final_df=
   bakers_df %>% 
   left_join(bakes_df, by=c("baker", "series")) %>% 
-  left_join(results_df, by = c("baker", "series", "episode"))
+  left_join(results_df, by = c("baker", "series", "episode")) %>% 
+  relocate(series, episode, .before="baker")
 write.csv(final_df, file = "data/gbb_datasets/final.csv")
 
   
 ```
 # description 
-When seeing the raw data, the baker.csv contains the full name of the baker, however, the bakes.csv and results.csv only include the first name of the baker, so I split the full name of the baker in the baker.csv data. Also, in the results.csv, the first two rows contains no useful information and lead confuse when handle with this data, so I skip the first two rows. Then I use anti_join function to see how different datasets match, 
+When seeing the raw data, the baker.csv contains the full name of the baker, however, the bakes.csv and results.csv only include the first name of the baker, so I split the full name of the baker in the baker.csv data. Also, in the results.csv, the first two rows contains no useful information and lead confuse when handle with this data, so I skip the first two rows. Then I use anti_join function to see how different datasets match, then I solve the name that not match. After that, I merge datasets in a order that can fill the missing data, then relocate the variable order to make it more reasonable to read. Finally, I save the merged dataset to the gbb_dataset file.

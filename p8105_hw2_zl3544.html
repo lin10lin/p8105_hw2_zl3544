@@ -575,7 +575,8 @@ each other.</p>
 <pre class="r"><code>final_df=
   bakers_df %&gt;% 
   left_join(bakes_df, by=c(&quot;baker&quot;, &quot;series&quot;)) %&gt;% 
-  left_join(results_df, by = c(&quot;baker&quot;, &quot;series&quot;, &quot;episode&quot;))
+  left_join(results_df, by = c(&quot;baker&quot;, &quot;series&quot;, &quot;episode&quot;)) %&gt;% 
+  relocate(series, episode, .before=&quot;baker&quot;)
 write.csv(final_df, file = &quot;data/gbb_datasets/final.csv&quot;)</code></pre>
 </div>
 <div id="description" class="section level1">
@@ -586,7 +587,10 @@ name of the baker, so I split the full name of the baker in the
 baker.csv data. Also, in the results.csv, the first two rows contains no
 useful information and lead confuse when handle with this data, so I
 skip the first two rows. Then I use anti_join function to see how
-different datasets match,</p>
+different datasets match, then I solve the name that not match. After
+that, I merge datasets in a order that can fill the missing data, then
+relocate the variable order to make it more reasonable to read. Finally,
+I save the merged dataset to the gbb_dataset file.</p>
 </div>
 
 
