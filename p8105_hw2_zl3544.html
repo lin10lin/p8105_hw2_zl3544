@@ -451,9 +451,14 @@ allow entrance is: 0.3770492</p>
   distinct(line, station_name) %&gt;% 
   nrow()</code></pre>
 <p>Among the stations that serve the A train, 17 are ADA compliant</p>
-<p>Problem 2</p>
-<p>Problem 3</p>
-<p>import the data :</p>
+</div>
+<div id="problem-2" class="section level1">
+<h1>Problem 2</h1>
+</div>
+<div id="problem-3" class="section level1">
+<h1>Problem 3</h1>
+<div id="import-the-data" class="section level2">
+<h2>Import the data :</h2>
 <pre class="r"><code>bakers_df=
   read_csv(&quot;./data/gbb_datasets/bakers.csv&quot;, na=c(&quot;NA&quot;,&quot;&quot;,&quot;.&quot;)) %&gt;% 
   janitor::clean_names() %&gt;% 
@@ -488,6 +493,9 @@ allow entrance is: 0.3770492</p>
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div id="correctness-and-completeness" class="section level2">
+<h2>Correctness and completeness</h2>
 <p>Use anti_join function to see how different datasets match, to check
 the correctness and completeness of the datasets.</p>
 <pre class="r"><code>anti_join(bakes_df, bakers_df, by = &quot;baker&quot;, &quot;series&quot;)</code></pre>
@@ -543,16 +551,19 @@ anti_join(bakes_df, bakers_df, by = &quot;baker&quot;, &quot;series&quot;)</code
 ## #   baker_occupation &lt;chr&gt;, hometown &lt;chr&gt;</code></pre>
 <p>Rename Jo to the results_df and bakes_df, the dataset all match with
 each other.</p>
+</div>
+<div id="merge-the-datasets" class="section level2">
+<h2>Merge the datasets</h2>
 <p>Merge the datasets together as one single dataset:</p>
 <pre class="r"><code>final_df=
-  bakers_df %&gt;% 
-  left_join(bakes_df, by=c(&quot;baker&quot;, &quot;series&quot;)) %&gt;% 
-  left_join(results_df, by = c(&quot;baker&quot;, &quot;series&quot;, &quot;episode&quot;)) %&gt;% 
+  results_df %&gt;% 
+  left_join(bakes_df, by = c(&quot;baker&quot;, &quot;series&quot;, &quot;episode&quot;)) %&gt;% 
+  left_join(bakers_df, by=c(&quot;baker&quot;, &quot;series&quot;)) %&gt;% 
   relocate(series, episode, .before=&quot;baker&quot;)
 write.csv(final_df, file = &quot;data/gbb_datasets/final.csv&quot;)</code></pre>
 </div>
-<div id="description" class="section level1">
-<h1>description</h1>
+<div id="description" class="section level2">
+<h2>description</h2>
 <p>When seeing the raw data, the baker.csv contains the full name of the
 baker, however, the bakes.csv and results.csv only include the first
 name of the baker, so I split the full name of the baker in the
@@ -568,6 +579,9 @@ bakes.csv, results.csv datasets and aviod missing data when merge the
 datasets together, and the variable is arranged in a logical way,
 readers can quickly find the baker given the series and episodes and the
 name of the baker.</p>
+</div>
+<div id="create-table-showing-winner-or-star-baker" class="section level2">
+<h2>Create table showing winner or star baker</h2>
 <p>Create a reader-friendly table showing the star baker or winner of
 each episode in Seasons 5 through 10.</p>
 <pre class="r"><code>star_winner_baker_df=
@@ -577,6 +591,44 @@ each episode in Seasons 5 through 10.</p>
   select(series, episode, baker, result) %&gt;% 
   arrange(series, episode, baker)
 write.csv(star_winner_baker_df, file = &quot;data/gbb_datasets/star_winner_baker.csv&quot;)</code></pre>
+<p>By viewing the results, we know that at each episode in each season
+there is a baker rewarded as “STAR BAKER”, at the end of each season,
+there will a “WINNER” of the season. Intuitively, the more a baker
+rewarded as “STAR BAKER”, the more likely that baker will be the
+“WINNER” of the end of season. We can see from the data that Nadiya from
+season 6, Candice ini season 7, Sophie in season 8</p>
+</div>
+<div id="handle-with-the-data-in-viewers.csv" class="section level2">
+<h2>Handle with the data in viewers.csv</h2>
+<pre class="r"><code>viewers_df=
+  read_csv(&quot;./data/gbb_datasets/viewers.csv&quot;, na=c(&quot;NA&quot;,&quot;&quot;,&quot;.&quot;)) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  pivot_longer(
+    cols=series_1:series_10,
+    names_to=&quot;series&quot;,
+    names_prefix = &quot;series_&quot;,
+    values_to = &quot;viewer&quot;,
+    values_drop_na = TRUE 
+  ) %&gt;% 
+  relocate(series, .before = episode) %&gt;% 
+  arrange(series)
+head(viewers_df, 10)</code></pre>
+<pre><code>## # A tibble: 10 × 3
+##    series episode viewer
+##    &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt;
+##  1 1            1   2.24
+##  2 1            2   3   
+##  3 1            3   3   
+##  4 1            4   2.6 
+##  5 1            5   3.03
+##  6 1            6   2.75
+##  7 10           1   9.62
+##  8 10           2   9.38
+##  9 10           3   8.94
+## 10 10           4   8.96</code></pre>
+<p>The average viewership in Season 1 is 2.77, the average viewership in
+Season 5 is 10.0393.</p>
+</div>
 </div>
 
 

@@ -99,11 +99,13 @@ stations_serve_A_ada=
 ```
 Among the stations that serve the A train, `r stations_serve_A_ada` are ADA compliant
 
-Problem 2
+# Problem 2
 
-Problem 3
 
-import the data :
+
+# Problem 3
+
+## Import the data :
 ```{r}
 bakers_df=
   read_csv("./data/gbb_datasets/bakers.csv", na=c("NA","",".")) %>% 
@@ -120,6 +122,8 @@ results_df=
   read_csv("./data/gbb_datasets/results.csv",skip=2 ,na=c("NA","",".")) %>% 
   janitor::clean_names()
 ```
+## Correctness and completeness 
+
 Use anti_join function to see how different datasets match, to check the correctness and completeness of the datasets.
 ```{r}
 anti_join(bakes_df, bakers_df, by = "baker", "series")
@@ -141,21 +145,25 @@ anti_join(bakers_df, results_df, by = "baker", "series")
 ```
 Rename Jo to the results_df and bakes_df, the dataset all match with each other.
 
+## Merge the datasets
+
 Merge the datasets together as one single dataset:
 ```{r}
 final_df=
-  bakers_df %>% 
-  left_join(bakes_df, by=c("baker", "series")) %>% 
-  left_join(results_df, by = c("baker", "series", "episode")) %>% 
+  results_df %>% 
+  left_join(bakes_df, by = c("baker", "series", "episode")) %>% 
+  left_join(bakers_df, by=c("baker", "series")) %>% 
   relocate(series, episode, .before="baker")
 write.csv(final_df, file = "data/gbb_datasets/final.csv")
 
   
 ```
-# description 
+## description 
 When seeing the raw data, the baker.csv contains the full name of the baker, however, the bakes.csv and results.csv only include the first name of the baker, so I split the full name of the baker in the baker.csv data. Also, in the results.csv, the first two rows contains no useful information and lead confuse when handle with this data, so I skip the first two rows. Then I use anti_join function to see how different datasets match, then I solve the name that not match. After that, I merge datasets in a order that can fill the missing data, then relocate the variable order to make it more reasonable to read. Finally, I save the merged dataset to the gbb_dataset file. 
 
 The final dataset consists all the information in the bakers.csv, bakes.csv, results.csv datasets and aviod missing data when merge the datasets together, and the variable is arranged in a logical way, readers can quickly find the baker given the series and episodes and the name of the baker.
+
+## Create table showing winner or star baker
 
 Create a reader-friendly table showing the star baker or winner of each episode in Seasons 5 through 10.
 ```{r}
@@ -167,3 +175,22 @@ star_winner_baker_df=
   arrange(series, episode, baker)
 write.csv(star_winner_baker_df, file = "data/gbb_datasets/star_winner_baker.csv")
 ```
+By viewing the results, we know that at each episode in each season there is a baker rewarded as "STAR BAKER", at the end of each season, there will a "WINNER" of the season. Intuitively, the more a baker rewarded as "STAR BAKER", the more likely that baker will be the "WINNER" of the end of season. We can see from the data that Nadiya from season 6, Candice ini season 7, Sophie in season 8
+
+## Handle with the data in viewers.csv
+```{r, message=FALSE}
+viewers_df=
+  read_csv("./data/gbb_datasets/viewers.csv", na=c("NA","",".")) %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    cols=series_1:series_10,
+    names_to="series",
+    names_prefix = "series_",
+    values_to = "viewer",
+    values_drop_na = TRUE 
+  ) %>% 
+  relocate(series, .before = episode) %>% 
+  arrange(series)
+head(viewers_df, 10)
+```
+The average viewership in Season 1 is `r viewers_df %>% filter(series == "1") %>% pull(viewer) %>% mean()`, the average viewership in Season 5 is `r viewers_df %>% filter(series == "5") %>% pull(viewer) %>% mean()`.
