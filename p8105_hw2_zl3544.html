@@ -368,6 +368,7 @@ display: none;
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()
 ## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+<pre class="r"><code>library(readxl)</code></pre>
 </div>
 <div id="problem-1" class="section level2">
 <h2>Problem 1</h2>
@@ -454,6 +455,54 @@ allow entrance is: 0.3770492</p>
 </div>
 <div id="problem-2" class="section level1">
 <h1>Problem 2</h1>
+<div id="read-and-clean-the-mr.-trash-wheel-sheet" class="section level2">
+<h2>Read and clean the Mr. Trash Wheel sheet:</h2>
+<pre class="r"><code>mr_df = read_excel(&quot;data/Trash_Wheel_Collection_202409.xlsx&quot;, sheet = &quot;Mr. Trash Wheel&quot;, range = &quot;A2:N653&quot;, na = c(&quot;NA&quot;, &quot;&quot;, &quot;,&quot;)) %&gt;% 
+  filter(!is.na(Dumpster)) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  mutate(year = as.character(year)) %&gt;% 
+  mutate(trash_wheel = &quot;mr&quot;) %&gt;%
+  mutate(sports_balls = as.integer(sports_balls), homes_powered = (weight_tons*500/30))</code></pre>
+</div>
+<div id="read-and-clean-the-professor-trash-wheel-sheet" class="section level2">
+<h2>Read and clean the Professor Trash Wheel sheet:</h2>
+<pre class="r"><code>pro_trash_df = read_excel(&quot;data/Trash_Wheel_Collection_202409.xlsx&quot;, sheet = &quot;Professor Trash Wheel&quot;, range = &quot;A2:M120&quot;, na = c(&quot;NA&quot;, &quot;&quot;, &quot;,&quot;)) %&gt;% 
+  filter(!is.na(Dumpster)) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  mutate(year = as.character(year)) %&gt;% 
+  mutate(homes_powered = (weight_tons*500/30)) %&gt;% 
+  mutate(trash_wheel = &quot;pro_trash&quot;)</code></pre>
+</div>
+<div id="read-and-clean-the-gwynnda-trash-wheel-sheet" class="section level2">
+<h2>Read and clean the Gwynnda Trash Wheel sheet:</h2>
+<pre class="r"><code>gwy_df = read_excel(&quot;data/Trash_Wheel_Collection_202409.xlsx&quot;, sheet = &quot;Gwynnda Trash Wheel&quot;, range = &quot;A2:L265&quot;, na = c(&quot;NA&quot;, &quot;&quot;, &quot;,&quot;)) %&gt;% 
+  filter(!is.na(Dumpster)) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  mutate(year = as.character(year)) %&gt;% 
+  mutate(trash_wheel = &quot;gwy&quot;) %&gt;%
+  mutate(homes_powered = (weight_tons*500/30))</code></pre>
+</div>
+<div id="combine-the-datasets" class="section level2">
+<h2>Combine the datasets</h2>
+<pre class="r"><code>tidy_df=
+  bind_rows(mr_df, pro_trash_df, gwy_df) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  relocate(trash_wheel, .before = dumpster) %&gt;% 
+  arrange(month, year, date)
+head(tidy_df)</code></pre>
+<pre><code>## # A tibble: 6 × 15
+##   trash_wheel dumpster month year  date                weight_tons
+##   &lt;chr&gt;          &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;dttm&gt;                    &lt;dbl&gt;
+## 1 mr                52 April 2015  2015-04-08 00:00:00        2.5 
+## 2 mr                53 April 2015  2015-04-10 00:00:00        3.41
+## 3 mr                54 April 2015  2015-04-19 00:00:00        1.83
+## 4 mr                55 April 2015  2015-04-20 00:00:00        3.84
+## 5 mr                56 April 2015  2015-04-20 00:00:00        3.22
+## 6 mr                57 April 2015  2015-04-20 00:00:00        3.03
+## # ℹ 9 more variables: volume_cubic_yards &lt;dbl&gt;, plastic_bottles &lt;dbl&gt;,
+## #   polystyrene &lt;dbl&gt;, cigarette_butts &lt;dbl&gt;, glass_bottles &lt;dbl&gt;,
+## #   plastic_bags &lt;dbl&gt;, wrappers &lt;dbl&gt;, sports_balls &lt;int&gt;, homes_powered &lt;dbl&gt;</code></pre>
+</div>
 </div>
 <div id="problem-3" class="section level1">
 <h1>Problem 3</h1>
@@ -571,9 +620,9 @@ baker.csv data. Also, in the results.csv, the first two rows contains no
 useful information and lead confuse when handle with this data, so I
 skip the first two rows. Then I use anti_join function to see how
 different datasets match, then I solve the name that not match. After
-that, I merge datasets in a order that can fill the missing data, then
-relocate the variable order to make it more reasonable to read. Finally,
-I save the merged dataset to the gbb_dataset file.</p>
+that, I merge datasets in a order that can include all the information,
+then relocate the variable order to make it more reasonable to read.
+Finally, I save the merged dataset to the gbb_dataset file.</p>
 <p>The final dataset consists all the information in the bakers.csv,
 bakes.csv, results.csv datasets and aviod missing data when merge the
 datasets together, and the variable is arranged in a logical way,
@@ -596,7 +645,8 @@ there is a baker rewarded as “STAR BAKER”, at the end of each season,
 there will a “WINNER” of the season. Intuitively, the more a baker
 rewarded as “STAR BAKER”, the more likely that baker will be the
 “WINNER” of the end of season. We can see from the data that Nadiya from
-season 6, Candice ini season 7, Sophie in season 8</p>
+season 6, Candice ini season 7, Sophie in season 8, Rahul in season 9,
+but the winner of season 10 and 5 didn’n follow this pattern.</p>
 </div>
 <div id="handle-with-the-data-in-viewers.csv" class="section level2">
 <h2>Handle with the data in viewers.csv</h2>

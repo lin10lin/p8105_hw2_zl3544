@@ -11,6 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ## R Markdown
 ```{r}
 library(tidyverse)
+library(readxl)
 ```
 
 ## Problem 1
@@ -100,9 +101,42 @@ stations_serve_A_ada=
 Among the stations that serve the A train, `r stations_serve_A_ada` are ADA compliant
 
 # Problem 2
-
-
-
+## Read and clean the Mr. Trash Wheel sheet:
+```{r}
+mr_df = read_excel("data/Trash_Wheel_Collection_202409.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N653", na = c("NA", "", ",")) %>% 
+  filter(!is.na(Dumpster)) %>% 
+  janitor::clean_names() %>% 
+  mutate(year = as.character(year)) %>% 
+  mutate(trash_wheel = "mr") %>%
+  mutate(sports_balls = as.integer(sports_balls), homes_powered = (weight_tons*500/30))
+```
+## Read and clean the Professor Trash Wheel sheet:
+```{r}
+pro_trash_df = read_excel("data/Trash_Wheel_Collection_202409.xlsx", sheet = "Professor Trash Wheel", range = "A2:M120", na = c("NA", "", ",")) %>% 
+  filter(!is.na(Dumpster)) %>% 
+  janitor::clean_names() %>% 
+  mutate(year = as.character(year)) %>% 
+  mutate(homes_powered = (weight_tons*500/30)) %>% 
+  mutate(trash_wheel = "pro_trash")
+```
+## Read and clean the Gwynnda Trash Wheel sheet:
+```{r}
+gwy_df = read_excel("data/Trash_Wheel_Collection_202409.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L265", na = c("NA", "", ",")) %>% 
+  filter(!is.na(Dumpster)) %>% 
+  janitor::clean_names() %>% 
+  mutate(year = as.character(year)) %>% 
+  mutate(trash_wheel = "gwy") %>%
+  mutate(homes_powered = (weight_tons*500/30))
+```
+## Combine the datasets
+```{r}
+tidy_df=
+  bind_rows(mr_df, pro_trash_df, gwy_df) %>% 
+  janitor::clean_names() %>% 
+  relocate(trash_wheel, .before = dumpster) %>% 
+  arrange(month, year, date)
+head(tidy_df)
+```
 # Problem 3
 
 ## Import the data :
@@ -159,7 +193,7 @@ write.csv(final_df, file = "data/gbb_datasets/final.csv")
   
 ```
 ## description 
-When seeing the raw data, the baker.csv contains the full name of the baker, however, the bakes.csv and results.csv only include the first name of the baker, so I split the full name of the baker in the baker.csv data. Also, in the results.csv, the first two rows contains no useful information and lead confuse when handle with this data, so I skip the first two rows. Then I use anti_join function to see how different datasets match, then I solve the name that not match. After that, I merge datasets in a order that can fill the missing data, then relocate the variable order to make it more reasonable to read. Finally, I save the merged dataset to the gbb_dataset file. 
+When seeing the raw data, the baker.csv contains the full name of the baker, however, the bakes.csv and results.csv only include the first name of the baker, so I split the full name of the baker in the baker.csv data. Also, in the results.csv, the first two rows contains no useful information and lead confuse when handle with this data, so I skip the first two rows. Then I use anti_join function to see how different datasets match, then I solve the name that not match. After that, I merge datasets in a order that can include all the information, then relocate the variable order to make it more reasonable to read. Finally, I save the merged dataset to the gbb_dataset file. 
 
 The final dataset consists all the information in the bakers.csv, bakes.csv, results.csv datasets and aviod missing data when merge the datasets together, and the variable is arranged in a logical way, readers can quickly find the baker given the series and episodes and the name of the baker.
 
@@ -175,7 +209,7 @@ star_winner_baker_df=
   arrange(series, episode, baker)
 write.csv(star_winner_baker_df, file = "data/gbb_datasets/star_winner_baker.csv")
 ```
-By viewing the results, we know that at each episode in each season there is a baker rewarded as "STAR BAKER", at the end of each season, there will a "WINNER" of the season. Intuitively, the more a baker rewarded as "STAR BAKER", the more likely that baker will be the "WINNER" of the end of season. We can see from the data that Nadiya from season 6, Candice ini season 7, Sophie in season 8
+By viewing the results, we know that at each episode in each season there is a baker rewarded as "STAR BAKER", at the end of each season, there will a "WINNER" of the season. Intuitively, the more a baker rewarded as "STAR BAKER", the more likely that baker will be the "WINNER" of the end of season. We can see from the data that Nadiya from season 6, Candice ini season 7, Sophie in season 8, Rahul in season 9, but the winner of season 10 and 5 didn'n follow this pattern.
 
 ## Handle with the data in viewers.csv
 ```{r, message=FALSE}
