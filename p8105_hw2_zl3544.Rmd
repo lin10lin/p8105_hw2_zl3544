@@ -137,7 +137,27 @@ tidy_df=
   arrange(month, year, date)
 head(tidy_df)
 ```
-# Problem 3
+## Description
+The resulted dataset contains `r nrow(tidy_df)` observations, including the inforamtion of name of trash wheel, the weight and type of crash collected by each trashwheel.
+```{r}
+total_weight_pro_trash=
+  tidy_df %>% 
+  filter(trash_wheel == "pro_trash") %>% 
+  pull(weight_tons) %>% 
+  sum()
+```
+The total weight of trash collected by Professor Trash Wheel is `r total_weight_pro_trash` tons. 
+```{r}
+cig_butts_gwy= 
+  tidy_df %>% 
+  filter(trash_wheel == "gwy") %>% 
+  filter(year == 2022) %>% 
+  filter(month == "June") %>% 
+  pull(cigarette_butts) %>% 
+  sum()
+```
+The total number of cigarette butts collected by Gwynnda in June of 2022 is `r cig_butts_gwy`.
+
 
 ## Import the data :
 ```{r}

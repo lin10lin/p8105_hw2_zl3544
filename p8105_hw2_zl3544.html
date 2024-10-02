@@ -503,9 +503,28 @@ head(tidy_df)</code></pre>
 ## #   polystyrene &lt;dbl&gt;, cigarette_butts &lt;dbl&gt;, glass_bottles &lt;dbl&gt;,
 ## #   plastic_bags &lt;dbl&gt;, wrappers &lt;dbl&gt;, sports_balls &lt;int&gt;, homes_powered &lt;dbl&gt;</code></pre>
 </div>
+<div id="description" class="section level2">
+<h2>Description</h2>
+<p>The resulted dataset contains 1032 observations, including the
+inforamtion of name of trash wheel, the weight and type of crash
+collected by each trashwheel.</p>
+<pre class="r"><code>total_weight_pro_trash=
+  tidy_df %&gt;% 
+  filter(trash_wheel == &quot;pro_trash&quot;) %&gt;% 
+  pull(weight_tons) %&gt;% 
+  sum()</code></pre>
+<p>The total weight of trash collected by Professor Trash Wheel is
+246.74 tons.</p>
+<pre class="r"><code>cig_butts_gwy= 
+  tidy_df %&gt;% 
+  filter(trash_wheel == &quot;gwy&quot;) %&gt;% 
+  filter(year == 2022) %&gt;% 
+  filter(month == &quot;June&quot;) %&gt;% 
+  pull(cigarette_butts) %&gt;% 
+  sum()</code></pre>
+<p>The total number of cigarette butts collected by Gwynnda in June of
+2022 is 1.812^{4}.</p>
 </div>
-<div id="problem-3" class="section level1">
-<h1>Problem 3</h1>
 <div id="import-the-data" class="section level2">
 <h2>Import the data :</h2>
 <pre class="r"><code>bakers_df=
@@ -611,7 +630,7 @@ each other.</p>
   relocate(series, episode, .before=&quot;baker&quot;)
 write.csv(final_df, file = &quot;data/gbb_datasets/final.csv&quot;)</code></pre>
 </div>
-<div id="description" class="section level2">
+<div id="description-1" class="section level2">
 <h2>description</h2>
 <p>When seeing the raw data, the baker.csv contains the full name of the
 baker, however, the bakes.csv and results.csv only include the first
