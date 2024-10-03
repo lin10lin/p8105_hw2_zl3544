@@ -1,6 +1,6 @@
 ---
 title: "p8105_hw2_zl3544"
-output: html_document
+output: github_document
 date: "2024-09-30"
 ---
 
@@ -9,14 +9,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## R Markdown
-```{r}
+```{r, message=FALSE}
 library(tidyverse)
 library(readxl)
 ```
 
-## Problem 1
+# Problem 1
 
-Using relative path to access the CSV file and clean the data:
+## Using relative path to access the CSV file and clean the data:
 ```{r, message=FALSE}
 NYC_transit_df = 
   read_csv("./data/NYC_Transit_Data.csv", na=c("NA","", ".")) %>% 
@@ -38,14 +38,15 @@ head(NYC_transit_df)
 In the data cleaning process above, I: Use the relative path to read the csv file, then treat "NA","", "." as missing, then select the variable that worth analyzing in this problem, and clean up variable names, finally, I convert the entry variable from character to a logical variable.
 
 After reading, selecting and cleaning the data, the data set to analyze has 1868 rows and 19 columns. But the data isn't tidy, for the reason that different routes are considered as different variables, these columns contain value information, they can be transformed.
-
+## Answer questions in the homework
+### Distinct stations
 Caculate the distinct stations using distinct function:
 ```{r, message=FALSE}
 distinct_stations= count(distinct(NYC_transit_df, station_name, line))
 ```
 There are `r count(distinct(NYC_transit_df, station_name, line))` distinct stations.
 
-Caculate the ADA compliant stations:
+### Caculate the ADA compliant stations:
 ```{r, message=FALSE}
 ada_compliant_stations= 
   NYC_transit_df %>% 
@@ -55,7 +56,7 @@ ada_compliant_stations=
   
 ```
 There are `r filter(NYC_transit_df, ada == "TRUE") %>% distinct(station_name, line) %>% nrow` ADA compliant stations.
-
+### Caculate the proportion of entrance without vending allow entrance
 Caculate the number of station entrances / exits without vending allow entrance:
 ```{r, message=FALSE}
 no_vending_entry=
@@ -64,7 +65,7 @@ no_vending_entry=
   nrow()
 ```
 Then the proportion of station entrances / exits without vending allow entrance is: `r (filter(NYC_transit_df, vending=="NO") %>% filter(entry=="TRUE") %>% nrow)/(filter(NYC_transit_df, vending=="NO") %>% nrow)`
-
+### Reformat data and information about A
 Reformat data:
 ```{r}
 Tidy_NYC_transit_df =
@@ -158,7 +159,7 @@ cig_butts_gwy=
 ```
 The total number of cigarette butts collected by Gwynnda in June of 2022 is `r cig_butts_gwy`.
 
-
+# Problem 3
 ## Import the data :
 ```{r}
 bakers_df=
@@ -212,7 +213,8 @@ write.csv(final_df, file = "data/gbb_datasets/final.csv")
 
   
 ```
-## description 
+## Description 
+
 When seeing the raw data, the baker.csv contains the full name of the baker, however, the bakes.csv and results.csv only include the first name of the baker, so I split the full name of the baker in the baker.csv data. Also, in the results.csv, the first two rows contains no useful information and lead confuse when handle with this data, so I skip the first two rows. Then I use anti_join function to see how different datasets match, then I solve the name that not match. After that, I merge datasets in a order that can include all the information, then relocate the variable order to make it more reasonable to read. Finally, I save the merged dataset to the gbb_dataset file. 
 
 The final dataset consists all the information in the bakers.csv, bakes.csv, results.csv datasets and aviod missing data when merge the datasets together, and the variable is arranged in a logical way, readers can quickly find the baker given the series and episodes and the name of the baker.
